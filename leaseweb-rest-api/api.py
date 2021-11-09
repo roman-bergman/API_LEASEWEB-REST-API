@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.2.1
+# RELEASE: 0.3.1
 # LICENSE: AGPL3.0
 
 
@@ -180,6 +180,38 @@ class DedicatedServers(LeasewebRestAPI):
 
         out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}'.format(serverId, ip), data=data, headers=headers)
         return True if out.status_code == 204 else out.json()
+
+    def null_route_ip(self,
+                         serverId: str,
+                         ip: str) -> dict:
+        """
+        Null the given IP address. It might take a few minutes before the change is propagated across the network.
+
+        :param serverId: The ID of a server.
+        :param ip: The IP Address.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}/null'.format(serverId, ip), headers=headers)
+        return out.json()
+
+    def remove_null_route_ip(self,
+                         serverId: str,
+                         ip: str) -> dict:
+        """
+        Remove an existing null route for the given IP address. It might take a few minutes before the change is propagated across the network.
+
+        :param serverId: The ID of a server.
+        :param ip: The IP Address.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}/unnull'.format(serverId, ip), headers=headers)
+        return out.json()
 
     def show_null_route_history(self,
                                 serverId: str,
@@ -470,3 +502,9 @@ def httpPut(api_url, api_uri, api_query='', data={}, headers={}):
     except Exception as err:
         return err
 
+def httpPost(api_url, api_uri, headers={}):
+    try:
+        req = requests.post('{}{}'.format(api_url, api_uri), headers=headers)
+        return req
+    except Exception as err:
+        return err

@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.3.1
+# RELEASE: 0.4.0
 # LICENSE: AGPL3.0
 
 
@@ -250,6 +250,34 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces'.format(serverId), headers=headers)
         return out.json()
 
+    def close_all_network_interfaces(self,
+                         serverId: str) -> dict:
+        """
+        Close all network interfaces for this server.
+
+        :param serverId: The ID of a server.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/close'.format(serverId), headers=headers)
+        return out.json()
+
+    def open_all_network_interfaces(self,
+                         serverId: str) -> dict:
+        """
+        Open all network interfaces of this server.
+
+        :param serverId: The ID of a server.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/open'.format(serverId), headers=headers)
+        return out.json()
+
     def show_a_network_interface(self,
                                  serverId: str,
                                  networkType: str) -> dict:
@@ -262,6 +290,38 @@ class DedicatedServers(LeasewebRestAPI):
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}'.format(serverId, networkType), headers=headers)
+        return out.json()
+
+    def close_network_interface(self,
+                                serverId: str,
+                                networkType: str) -> dict:
+        """
+        Close all network interfaces of this server by types.
+
+        :param serverId: The ID of a server.
+        :param networkType: The network type.  Enum: "public" "internal" "remoteManagement".
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}/close'.format(serverId, networkType), headers=headers)
+        return out.json()
+
+    def open_network_interface(self,
+                                serverId: str,
+                                networkType: str) -> dict:
+        """
+        Open all network interfaces of this server by types.
+
+        :param serverId: The ID of a server.
+        :param networkType: The network type.  Enum: "public" "internal" "remoteManagement".
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}/open'.format(serverId, networkType), headers=headers)
         return out.json()
 
     def add_server_to_private_network(self,

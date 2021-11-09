@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.1.12
+# RELEASE: 0.2.1
 # LICENSE: AGPL3.0
 
 
@@ -64,7 +64,7 @@ class DedicatedServers(LeasewebRestAPI):
         """
         Use this API to get information about a single server.
 
-        :param serverId: The ID of a server
+        :param serverId: The ID of a server.
         :return: Standard HTTP status codes will be JSON.
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
@@ -77,8 +77,8 @@ class DedicatedServers(LeasewebRestAPI):
         """
         Update the reference for a server.
 
-        :param serverId: The ID of a server
-        :param reference: The reference for this server
+        :param serverId: The ID of a server.
+        :param reference: The reference for this server.
         :return: Standard HTTP status codes will be JSON.
         """
         headers = {
@@ -94,7 +94,7 @@ class DedicatedServers(LeasewebRestAPI):
         """
         This information is generated when running a hardware scan for your server. A hardware scan collects hardware information about your system.
 
-        :param serverId: The ID of a server
+        :param serverId: The ID of a server.
         :return: Standard HTTP status codes will be JSON.
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
@@ -113,11 +113,11 @@ class DedicatedServers(LeasewebRestAPI):
         """
         List all IP Addresses associated with this server. Optionally filtered.
 
-        :param serverId: The ID of a server
-        :param networkType: Filter the collection of ip addresses by network type
-        :param version: Filter the collection by ip version
-        :param nullRouted: Filter Ips by Nulled-Status
-        :param ips: Filter the collection of Ips for the comma separated list of Ips
+        :param serverId: The ID of a server.
+        :param networkType: Filter the collection of ip addresses by network type.
+        :param version: Filter the collection by ip version.
+        :param nullRouted: Filter Ips by Nulled-Status.
+        :param ips: Filter the collection of Ips for the comma separated list of Ips.
         :param limit: Limit the number of results returned.
         :param offset: Return results starting from the given offset.
         :return: Standard HTTP status codes will be JSON.
@@ -138,12 +138,33 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips'.format(serverId), api_query=query_added, headers=headers)
         return out.json()
 
-    def show_an_ip(self, serverId, ip):
+    def show_an_ip(self,
+                   serverId: str,
+                   ip: str) -> dict:
+        """
+        Get a single IP address associated with this server.
+
+        :param serverId: The ID of a server.
+        :param ip: The IP Address.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}'.format(serverId, ip), headers=headers)
         return out.json()
 
-    def update_an_ip(self, serverId, ip, detectionProfile=None, reverseLookup=None):
+    def update_an_ip(self,
+                     serverId: str,
+                     ip: str,
+                     detectionProfile: str = None,
+                     reverseLookup: str = None) -> dict:
+        """
+
+        :param serverId: The ID of a server.
+        :param ip: The IP Address.
+        :param detectionProfile: The detection profile value.  Enum: "ADVANCED_DEFAULT" "ADVANCED_LOW_UDP" "ADVANCED_MED_UDP".
+        :param reverseLookup: The reverse lookup value.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {
             'x-lsw-auth': self.config['API_KEY'],
             'content-type': 'application/json'
@@ -157,10 +178,21 @@ class DedicatedServers(LeasewebRestAPI):
             if data[elem]:
                 data.update({elem: _data[elem]})
 
-        out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}'.format(serverId), data=data, headers=headers)
+        out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}'.format(serverId, ip), data=data, headers=headers)
         return True if out.status_code == 204 else out.json()
 
-    def show_null_route_history(self, serverId, limit=20, offset=0):
+    def show_null_route_history(self,
+                                serverId: str,
+                                limit: int = 20,
+                                offset: int = 0) -> dict:
+        """
+        Show all null route history for any ips associated with this server.
+
+        :param serverId: The ID of a server.
+        :param limit: Limit the number of results returned.
+        :param offset: Return results starting from the given offset.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         query_params = {
             'limit': limit,
@@ -173,17 +205,73 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/nullRouteHistory'.format(serverId), api_query=query_added, headers=headers)
         return out.json()
 
-    def list_network_interfaces(self, serverId):
+    def list_network_interfaces(self,
+                                serverId: str) -> dict:
+        """
+        List all network interfaces for this server, including their current status.
+
+
+        :param serverId: The ID of a server.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces'.format(serverId), headers=headers)
         return out.json()
 
-    def show_a_network_interface(self, serverId, networkType):
+    def show_a_network_interface(self,
+                                 serverId: str,
+                                 networkType: str) -> dict:
+        """
+        List the network interfaces of the given type of this server, including their status.
+
+        :param serverId: The ID of a server.
+        :param networkType: The network type.  Enum: "public" "internal" "remoteManagement".
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}'.format(serverId, networkType), headers=headers)
         return out.json()
 
-    def list_dhcp_reservation(self, serverId):
+    def add_server_to_private_network(self,
+                                      serverId: str,
+                                      privateNetworkId: str,
+                                      linkSpeed: int) -> dict:
+        """
+        It takes a few minutes before the server has access to the private network.
+
+        To get the current status of the server you can call get_server({serverId}).
+        Once the server is added to the private network the status changes from CONFIGURING to CONFIGURED.
+
+
+        :param serverId: The ID of a server.
+        :param privateNetworkId: The ID of a Private Network.
+        :param linkSpeed: The port speed in Mbps.  Enum: "100", "1000", "10000".
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY'],
+            'content-type': 'application/json'
+        }
+        _data = {
+            'linkSpeed': linkSpeed
+        }
+        data = {}
+        for elem in _data:
+            if data[elem]:
+                data.update({elem: _data[elem]})
+
+        out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}/privateNetworks/{}'.format(serverId, privateNetworkId), data=data, headers=headers)
+        return True if out.status_code == 204 else out.json()
+
+
+    def list_dhcp_reservation(self,
+                              serverId: str) -> dict:
+        """
+        Please note that this will only show reservations for the public network interface.
+
+        :param serverId: The ID of a server.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/leases'.format(serverId), headers=headers)
         return out.json()
@@ -381,10 +469,4 @@ def httpPut(api_url, api_uri, api_query='', data={}, headers={}):
         return req
     except Exception as err:
         return err
-
-
-if __name__ == '__main__':
-    api = DedicatedServers()
-    api.config['API_KEY'] = 'c51dd46f-265e-44a5-a864-8fad0618d617'
-    print(api.update_server("103060", reference='OLOLO'))
 

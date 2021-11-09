@@ -16,21 +16,29 @@ class LeasewebRestAPI():
 
 
 class DedicatedServers(LeasewebRestAPI):
-    def list_servers(self, limit=20, offset=0, ip=None, macAddress=None, site=None, privateRackId=None, privateNetworkCapable=None, privateNetworkEnabled=None):
+    def list_servers(self,
+                     limit: int = 20,
+                     offset: int = 0,
+                     ip: str = None,
+                     macAddress: str = None,
+                     site: str = None,
+                     privateRackId: str = None,
+                     privateNetworkCapable: str = None,
+                     privateNetworkEnabled: str = None) -> dict:
         """
         List your Dedicated Servers.
 
         This api call supports pagination. Use the `limit` and `offset` query string parameters to paginate through all your dedicated servers.
         Every server object in the json response lists a few properties of a server. Use the single resouce api call to get more details for a single server.
 
-        :param limit: int - Limit the number of results returned.
-        :param offset: int - Return results starting from the given offset.
-        :param ip: string - Filter the list of servers by ip address.
-        :param macAddress: string - Filter the list of servers by mac address.
-        :param site: string - Filter the list of servers by site (location).
-        :param privateRackId: string - Filter the list of servers by private rack id.
-        :param privateNetworkCapable: string - Filter the list for private network capable servers. Enum: "true" or "false".
-        :param privateNetworkEnabled: string - Filter the list for private network enabled servers. Enum: "true" or "false".
+        :param limit: Limit the number of results returned.
+        :param offset: Return results starting from the given offset.
+        :param ip: Filter the list of servers by ip address.
+        :param macAddress: Filter the list of servers by mac address.
+        :param site: Filter the list of servers by site (location).
+        :param privateRackId: Filter the list of servers by private rack id.
+        :param privateNetworkCapable: Filter the list for private network capable servers. Enum: "true" or "false".
+        :param privateNetworkEnabled: Filter the list for private network enabled servers. Enum: "true" or "false".
         :return: Standard HTTP status codes will be JSON.
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
@@ -51,23 +59,26 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers', api_query=query_added, headers=headers)
         return out.json()
 
-    def get_server(self, serverId):
+    def get_server(self,
+                   serverId: str) -> dict:
         """
         Use this API to get information about a single server.
 
-        :param serverId: - string - The ID of a server
+        :param serverId: The ID of a server
         :return: Standard HTTP status codes will be JSON.
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}'.format(serverId), headers=headers)
         return out.json()
 
-    def update_server(self, serverId, reference):
+    def update_server(self,
+                      serverId: str,
+                      reference: str) -> dict:
         """
         Update the reference for a server.
 
-        :param serverId: - string - The ID of a server
-        :param reference: - string - The reference for this server
+        :param serverId: The ID of a server
+        :param reference: The reference for this server
         :return: Standard HTTP status codes will be JSON.
         """
         headers = {
@@ -78,12 +89,39 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}'.format(serverId), data=data, headers=headers)
         return True if out.status_code == 204 else out.json()
 
-    def show_hardware_information(self, serverId):
+    def show_hardware_information(self,
+                                  serverId: str) -> dict:
+        """
+        This information is generated when running a hardware scan for your server. A hardware scan collects hardware information about your system.
+
+        :param serverId: The ID of a server
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/hardwareInfo'.format(serverId), headers=headers)
         return out.json()
 
-    def list_ips(self, serverId, networkType=None, version=None, nullRouted=None, ips=None, limit=20, offset=0):
+    def list_ips(self,
+                 serverId: str,
+                 networkType: str = None,
+                 version: str = None,
+                 nullRouted: str = None,
+                 ips: str = None,
+                 limit: int = 20,
+                 offset: int = 0) -> dict:
+
+        """
+        List all IP Addresses associated with this server. Optionally filtered.
+
+        :param serverId: The ID of a server
+        :param networkType: Filter the collection of ip addresses by network type
+        :param version: Filter the collection by ip version
+        :param nullRouted: Filter Ips by Nulled-Status
+        :param ips: Filter the collection of Ips for the comma separated list of Ips
+        :param limit: Limit the number of results returned.
+        :param offset: Return results starting from the given offset.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         query_params = {
             'networkType': networkType,

@@ -15,20 +15,23 @@ class LeasewebRestAPI():
         }
 
 
-
 class DedicatedServers(LeasewebRestAPI):
     def list_servers(self, limit=20, offset=0, ip=None, macAddress=None, site=None, privateRackId=None, privateNetworkCapable=None, privateNetworkEnabled=None):
         """
+        List your Dedicated Servers.
 
-        :param limit:
-        :param offset:
-        :param ip:
-        :param macAddress:
-        :param site:
-        :param privateRackId:
-        :param privateNetworkCapable:
-        :param privateNetworkEnabled:
-        :return:
+        This api call supports pagination. Use the `limit` and `offset` query string parameters to paginate through all your dedicated servers.
+        Every server object in the json response lists a few properties of a server. Use the single resouce api call to get more details for a single server.
+
+        :param limit: int - Limit the number of results returned.
+        :param offset: int - Return results starting from the given offset.
+        :param ip: string - Filter the list of servers by ip address.
+        :param macAddress: string - Filter the list of servers by mac address.
+        :param site: string - Filter the list of servers by site (location).
+        :param privateRackId: string - Filter the list of servers by private rack id.
+        :param privateNetworkCapable: string - Filter the list for private network capable servers. Enum: "true" or "false".
+        :param privateNetworkEnabled: string - Filter the list for private network enabled servers. Enum: "true" or "false".
+        :return: Standard HTTP status codes will be JSON.
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         query_params = {
@@ -49,11 +52,24 @@ class DedicatedServers(LeasewebRestAPI):
         return out.json()
 
     def get_server(self, serverId):
+        """
+        Use this API to get information about a single server.
+
+        :param serverId: - string - The ID of a server
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}'.format(serverId), headers=headers)
         return out.json()
 
     def update_server(self, serverId, reference):
+        """
+        Update the reference for a server.
+
+        :param serverId: - string - The ID of a server
+        :param reference: - string - The reference for this server
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {
             'x-lsw-auth': self.config['API_KEY'],
             'content-type': 'application/json'

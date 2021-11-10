@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.4.0
+# RELEASE: 0.5.0
 # LICENSE: AGPL3.0
 
 
@@ -29,7 +29,7 @@ class DedicatedServers(LeasewebRestAPI):
         List your Dedicated Servers.
 
         This api call supports pagination. Use the `limit` and `offset` query string parameters to paginate through all your dedicated servers.
-        Every server object in the json response lists a few properties of a server. Use the single resouce api call to get more details for a single server.
+        Every server object in the json response lists a few properties of a server. Use the single resource api call to get more details for a single server.
 
         :param limit: Limit the number of results returned.
         :param offset: Return results starting from the given offset.
@@ -138,7 +138,7 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips'.format(serverId), api_query=query_added, headers=headers)
         return out.json()
 
-    def show_an_ip(self,
+    def show_ip(self,
                    serverId: str,
                    ip: str) -> dict:
         """
@@ -152,12 +152,13 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}'.format(serverId, ip), headers=headers)
         return out.json()
 
-    def update_an_ip(self,
+    def update_ip(self,
                      serverId: str,
                      ip: str,
                      detectionProfile: str = None,
                      reverseLookup: str = None) -> dict:
         """
+        Update the reverse lookup or DDoS detection profile for the ip address.
 
         :param serverId: The ID of a server.
         :param ip: The IP Address.
@@ -175,11 +176,11 @@ class DedicatedServers(LeasewebRestAPI):
         }
         data = {}
         for elem in _data:
-            if data[elem]:
+            if _data[elem]:
                 data.update({elem: _data[elem]})
 
         out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips/{}'.format(serverId, ip), data=data, headers=headers)
-        return True if out.status_code == 204 else out.json()
+        return out.json()
 
     def null_route_ip(self,
                          serverId: str,
@@ -242,7 +243,6 @@ class DedicatedServers(LeasewebRestAPI):
         """
         List all network interfaces for this server, including their current status.
 
-
         :param serverId: The ID of a server.
         :return: Standard HTTP status codes will be JSON.
         """
@@ -251,34 +251,34 @@ class DedicatedServers(LeasewebRestAPI):
         return out.json()
 
     def close_all_network_interfaces(self,
-                         serverId: str) -> dict:
+                                     serverId: str) -> bool:
         """
         Close all network interfaces for this server.
 
         :param serverId: The ID of a server.
-        :return: Standard HTTP status codes will be JSON.
+        :return: Bool.
         """
         headers = {
             'x-lsw-auth': self.config['API_KEY']
         }
         out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/close'.format(serverId), headers=headers)
-        return out.json()
+        return True if out.status_code == 204 else False
 
     def open_all_network_interfaces(self,
-                         serverId: str) -> dict:
+                                    serverId: str) -> bool:
         """
         Open all network interfaces of this server.
 
         :param serverId: The ID of a server.
-        :return: Standard HTTP status codes will be JSON.
+        :return: Bool.
         """
         headers = {
             'x-lsw-auth': self.config['API_KEY']
         }
         out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/open'.format(serverId), headers=headers)
-        return out.json()
+        return True if out.status_code == 204 else False
 
-    def show_a_network_interface(self,
+    def show_network_interface_by_type(self,
                                  serverId: str,
                                  networkType: str) -> dict:
         """
@@ -292,37 +292,57 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}'.format(serverId, networkType), headers=headers)
         return out.json()
 
-    def close_network_interface(self,
+    def close_network_interface_by_type(self,
                                 serverId: str,
-                                networkType: str) -> dict:
+                                networkType: str) -> bool:
         """
         Close all network interfaces of this server by types.
 
         :param serverId: The ID of a server.
         :param networkType: The network type.  Enum: "public" "internal" "remoteManagement".
-        :return: Standard HTTP status codes will be JSON.
+        :return: Bool.
         """
         headers = {
             'x-lsw-auth': self.config['API_KEY']
         }
         out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}/close'.format(serverId, networkType), headers=headers)
-        return out.json()
+        return True if out.status_code == 204 else False
 
     def open_network_interface(self,
                                 serverId: str,
-                                networkType: str) -> dict:
+                                networkType: str) -> bool:
         """
         Open all network interfaces of this server by types.
 
         :param serverId: The ID of a server.
         :param networkType: The network type.  Enum: "public" "internal" "remoteManagement".
-        :return: Standard HTTP status codes will be JSON.
+        :return: Bool.
         """
         headers = {
             'x-lsw-auth': self.config['API_KEY']
         }
         out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}/open'.format(serverId, networkType), headers=headers)
-        return out.json()
+        return True if out.status_code == 204 else False
+
+    def delete_server_from_private_network(self,
+                                           serverId: str,
+                                           privateNetworkId: str) -> dict:
+        """
+        This API call will remove the dedicated server from the private network.
+
+        It takes a few minutes before the server has been removed from the private network.
+        To get the current status of the server you can call get_server({serverId}).
+        While the server is being removed the status changes to `REMOVING`.
+
+        :param serverId: The ID of a server.
+        :param privateNetworkId: The ID of a Private Network.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY']
+        }
+        out = httpDelete(self.config['API_URL'], '/bareMetals/v2/servers/{}/privateNetworks/{}'.format(serverId, privateNetworkId), headers=headers)
+        return True if out.status_code == 204 else out.json()
 
     def add_server_to_private_network(self,
                                       serverId: str,
@@ -349,12 +369,24 @@ class DedicatedServers(LeasewebRestAPI):
         }
         data = {}
         for elem in _data:
-            if data[elem]:
+            if _data[elem]:
                 data.update({elem: _data[elem]})
-
         out = httpPut(self.config['API_URL'], '/bareMetals/v2/servers/{}/privateNetworks/{}'.format(serverId, privateNetworkId), data=data, headers=headers)
         return True if out.status_code == 204 else out.json()
 
+    def delete_dhcp_reservation(self,
+                                serverId: str) -> bool:
+        """
+        Delete a DHCP reservation for this server.
+
+        :param serverId: The ID of a server.
+        :return: Bool.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY'],
+        }
+        out = httpDelete(self.config['API_URL'], '/bareMetals/v2/servers/{}/leases'.format(serverId), headers=headers)
+        return True if out.status_code == 204 else False
 
     def list_dhcp_reservation(self,
                               serverId: str) -> dict:
@@ -366,6 +398,90 @@ class DedicatedServers(LeasewebRestAPI):
         """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/leases'.format(serverId), headers=headers)
+        return out.json()
+
+    def create_dhcp_reservation(self,
+                                serverId: str,
+                                bootfile: str,
+                                hostname: str) -> dict:
+        """
+        After rebooting your server it will acquire this DHCP reservation and boot from the specified bootfile url.
+
+        Please note that this API call will not reboot or power cycle your server.
+
+        :param serverId: The ID of a server.
+        :param bootfile: The URL of PXE boot you want your server to boot from. bootfile: http://example.com/bootme.ipxe
+        :param hostname: The hostname for the server.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY'],
+            'content-type': 'application/json'
+        }
+        _data = {
+            'bootfile': bootfile,
+            'hostname': hostname
+        }
+        data = {}
+        for elem in _data:
+            if _data[elem]:
+                data.update({elem: _data[elem]})
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/leases'.format(serverId), data=data, headers=headers)
+        return True if out.status_code == 204 else out.json()
+
+    def cancel_active_job(self,
+                          serverId: str) -> dict:
+        """
+        Canceling an active job will trigger the onfail flow of the current job often resulting in a server reboot. If you do not want the server state to change expire the active job instead.
+
+        :param serverId: The ID of a server.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {'x-lsw-auth': self.config['API_KEY']}
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/cancelActiveJob'.format(serverId), headers=headers)
+        return out.json()
+
+    def expire_active_job(self,
+                          serverId: str) -> dict:
+        """
+        Expiring an active job will not have any influence on the current state of the server and is merely an administrative action.
+
+        Often you want to cancel the job, resulting in a server reboot. In that case\nuse the /cancelActiveJob API call instead.
+
+        :param serverId: The ID of a server.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {'x-lsw-auth': self.config['API_KEY']}
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/expireActiveJob'.format(serverId), headers=headers)
+        return out.json()
+
+    def launch_hardware_scan(self,
+                            serverId: str,
+                            callbackUrl: str = None,
+                            powerCycle: bool = True) -> dict:
+        """
+        A hardware scan collects hardware related information from your server.
+
+        A hardware scan will require a reboot of your server. The contents of your hard drive won't be altered in any way. After a successful hardware scan your server is booted back into the original operating system.
+
+        :param serverId: The ID of a server.
+        :param callbackUrl: Url which will receive callbacks.
+        :param powerCycle: If set to true, server will be power cycled in order to complete the operation.
+        :return: Standard HTTP status codes will be JSON.
+        """
+        headers = {
+            'x-lsw-auth': self.config['API_KEY'],
+            'content-type': 'application/json'
+        }
+        data_payload = {
+            'callbackUrl': callbackUrl,
+            'powerCycle': powerCycle
+        }
+        data = {}
+        for elem in data_payload:
+            if data_payload[elem]:
+                data.update({elem: data_payload[elem]})
+        out = httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/hardwareScan'.format(serverId), data=data, headers=headers)
         return out.json()
 
     def list_jobs(self, serverId):
@@ -529,8 +645,16 @@ class DedicatedServers(LeasewebRestAPI):
         out = httpGet(self.config['API_URL'], '/bareMetals/v2/controlPanels?'.format(operatingSystemId), api_query=query_added, headers=headers)
         return out.json()
 
+    def rescue_images(self,
+                      limit: int = 20,
+                      offset: int = 0) -> dict:
+        """
+        Lists all Rescue Images which are available for launching a dedicated server into rescue mode.
 
-    def rescue_images(self, limit=20, offset=0):
+        :param limit: Limit the number of results returned.
+        :param offset: Return results starting from the given offset.
+        :return: Standard HTTP status codes will be JSON.
+        """
         headers = {'x-lsw-auth': self.config['API_KEY']}
         query_params = {
             'limit': limit,
@@ -562,9 +686,18 @@ def httpPut(api_url, api_uri, api_query='', data={}, headers={}):
     except Exception as err:
         return err
 
-def httpPost(api_url, api_uri, headers={}):
+
+def httpPost(api_url, api_uri, data={}, headers={}):
     try:
-        req = requests.post('{}{}'.format(api_url, api_uri), headers=headers)
+        req = requests.post('{}{}'.format(api_url, api_uri), data=data, headers=headers)
+        return req
+    except Exception as err:
+        return err
+
+
+def httpDelete(api_url, api_uri, headers={}):
+    try:
+        req = requests.delete('{}{}'.format(api_url, api_uri), headers=headers)
         return req
     except Exception as err:
         return err

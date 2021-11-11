@@ -1,5 +1,7 @@
 ## Errors
 
+The API uses standard HTTP status codes to indicate the success or failure of the API call. The response will be JSON. Most APIs use the following format:
+
 ```json
 {
 "errorCode" : "APP00800",

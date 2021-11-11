@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.5.1
+# RELEASE: 0.5.3
 # LICENSE: AGPL3.0
 
 from .core.utils import utils
@@ -274,9 +274,9 @@ class DedicatedServers():
         out = utils.httpPost(self.config['API_URL'], '/bareMetals/v2/servers/{}/networkInterfaces/{}/close'.format(serverId, networkType), headers=headers)
         return True if out.status_code == 204 else False
 
-    def open_network_interface(self,
-                                serverId: str,
-                                networkType: str) -> bool:
+    def open_network_interface_by_type(self,
+                                       serverId: str,
+                                       networkType: str) -> bool:
         """
         Open all network interfaces of this server by types.
 
@@ -1084,7 +1084,7 @@ class DedicatedServers():
         out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/operatingSystems/{}?operatingSystemId={}'.format(operatingSystemId, controlPanelId), headers=headers)
         return out.json()
 
-    def list_control_panels_an_os(self,
+    def list_control_panels_by_os(self,
                                   operatingSystemId: str,
                                   limit: int = 20,
                                   offset: int = 0) -> dict:

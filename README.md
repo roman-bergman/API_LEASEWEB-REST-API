@@ -32,9 +32,10 @@ api.config['API_KEY'] = '<some api key>'
 ## USAGE
 
 To use the API, you need to generate an API key on the Leaseweb Customer Portal. See [Authentication section](#authentication).
-API usage follows the pattern api.<API_SERVICE>.<API_FUNCTION>, where:
-* API_SERVICE - API services offered by Leaseweb Services. For available services see [API SERVICES SUPPORT](#api-services-support).
-* API_FUNCTION - Functions available for specific API_SERVICES. See [API FUNCTION SUPPORT](#api-function-support).
+
+API usage follows the pattern **api.<API_SERVICE>.<API_FUNCTION>**, where:
+* **API_SERVICE** - API services offered by Leaseweb Services. For available services see [API SERVICES SUPPORT](#api-services-support).
+* **API_FUNCTION** - Functions available for specific API_SERVICES. See [API FUNCTION SUPPORT](#api-function-support).
 
 ### Example:
 

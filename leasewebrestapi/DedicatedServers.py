@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.5.3
+# RELEASE: 0.5.4
 # LICENSE: AGPL3.0
 
 from .core.utils import utils
@@ -45,7 +45,7 @@ class DedicatedServers():
             'privateNetworkCapable': privateNetworkCapable,
             'privateNetworkEnabled': privateNetworkEnabled
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers', query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers?', query=utils.query(query_params), headers=headers)
         return out.json()
 
     def get_server(self,
@@ -120,7 +120,7 @@ class DedicatedServers():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips'.format(serverId), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/ips?'.format(serverId), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def show_ip(self,
@@ -207,7 +207,7 @@ class DedicatedServers():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/nullRouteHistory'.format(serverId), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/nullRouteHistory?'.format(serverId), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def list_network_interfaces(self,
@@ -647,7 +647,7 @@ class DedicatedServers():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/credentials/{}'.format(serverId, type), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/credentials/{}?'.format(serverId, type), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def delete_user_credentials(self,
@@ -773,7 +773,7 @@ class DedicatedServers():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/notificationSettings/bandwidth'.format(serverId), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/notificationSettings/bandwidth?'.format(serverId), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def create_bandwidth_notification_settings(self,
@@ -875,7 +875,7 @@ class DedicatedServers():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/notificationSettings/datatraffic'.format(serverId), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/servers/{}/notificationSettings/datatraffic?'.format(serverId), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def create_datatraffic_notification_settings(self,
@@ -1065,7 +1065,7 @@ class DedicatedServers():
             'offset': offset,
             'controlPanelId': controlPanelId
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/operatingSystems', query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/operatingSystems?', query=utils.query(query_params), headers=headers)
         return out.json()
 
     def show_operating_system(self,
@@ -1101,7 +1101,7 @@ class DedicatedServers():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/operatingSystems/{}/controlPanels'.format(operatingSystemId), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/operatingSystems/{}/controlPanels?'.format(operatingSystemId), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def list_control_panels(self,
@@ -1124,7 +1124,7 @@ class DedicatedServers():
             'offset': offset,
             'operatingSystemId': operatingSystemId
         }
-        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/controlPanels'.format(operatingSystemId), query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/bareMetals/v2/controlPanels?'.format(operatingSystemId), query=utils.query(query_params), headers=headers)
         return out.json()
 
     def rescue_images(self,

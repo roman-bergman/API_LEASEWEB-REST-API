@@ -1,5 +1,5 @@
 #  AUTHOR: Roman Bergman <roman.bergman@protonmail.com>
-# RELEASE: 0.3.0
+# RELEASE: 0.3.1
 # LICENSE: AGPL3.0
 
 from .core.utils import utils
@@ -24,7 +24,7 @@ class Invoice():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/invoices/v1/invoices', query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/invoices/v1/invoices?', query=utils.query(query_params), headers=headers)
         return out.json()
 
     def pro_forma(self,
@@ -42,7 +42,7 @@ class Invoice():
             'limit': limit,
             'offset': offset
         }
-        out = utils.httpGet(self.config['API_URL'], '/invoices/v1/invoices/proforma', query=utils.query(query_params), headers=headers)
+        out = utils.httpGet(self.config['API_URL'], '/invoices/v1/invoices/proforma?', query=utils.query(query_params), headers=headers)
         return out.json()
 
     def inspect_invoice(self,

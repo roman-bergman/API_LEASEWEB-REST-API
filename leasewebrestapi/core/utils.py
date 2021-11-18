@@ -40,7 +40,7 @@ class Utils():
             query = ''
             for elem in query_params:
                 if query_params[elem]:
-                    query += '?{}={}'.format(elem, query_params[elem])
+                    query += '&{}={}'.format(elem, query_params[elem])
             return query
         else:
             return ''
